@@ -127,6 +127,7 @@ def run_json():
         os.makedirs(ass_path)
 
     create_ass(rn,_path,startTime,endTime,ass_path)
+    cmds.quit(force=True)
 
 def load_json_file(file):
     jsonData  = json.loads(open(file).read())
