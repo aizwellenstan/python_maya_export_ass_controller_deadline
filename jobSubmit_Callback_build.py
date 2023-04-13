@@ -107,22 +107,8 @@ def main(PROJ_NAME,sq,st):
     cmds.select(cams)
     cmds.file(output, force=True, options = 'V=0', type= 'mayaAscii', pr=True, es=True)
 
-    # file_name = "controller" 
-    # # output = os.path.join(separate,"%s.ma" % file_name)
-    # output = os.path.join(separate,"%s.abc" % file_name)
-    # locs = CreateLocators()
-    # # cmds.select(locs)
-    # # cmds.file(output, force=True, options = 'V=0', type= 'mayaAscii', pr=True, es=True, exportSelected=True)
-    # ExportAbc(locs, st_time, ed_time, output)
-
-    # file_name = "curves" 
-    # output = os.path.join(separate,"%s.ma" % file_name)
-    # curves = GetCurves()
-    # cmds.select(curves)
-    # mel.eval("cleanUpScene 3")
-    # cmds.file(output, force=True, options = 'V=0', type= 'mayaAscii', pr=True, es=True, exportSelected=True)
-
-    dic = "{\n"
+    # dic = "{\n"
+    dic = {}
     check_ns = cmds.ls(type="reference")
     rn_list = []
     for i in check_ns:
@@ -133,24 +119,28 @@ def main(PROJ_NAME,sq,st):
             pass
     for i in rn_list:
         file_name = cmds.referenceQuery(i,filename=True)
-        ns = cmds.referenceQuery( i,namespace=True ).split(":")[1]
+        try:
+            ns = cmds.referenceQuery( i,namespace=True ).split(":")[1]
+        except: continue
         output = os.path.join(separate,"%s.ma" % ns)
 
         if "camera" in file_name:
             pass
         else:
-            dic += '''"%s":{"STARTTIME":%s,"ENDTIME":%s,"SEQ":"%s","SHOT":"%s","SUBMIT":1}\n''' % (ns,st_time,ed_time,sq,st)
+            dic[ns] = {"STARTTIME":st_time,"ENDTIME":ed_time,"SEQ":sq,"SHOT":st,"SUBMIT":1}
+            # dic += '''"%s":{"STARTTIME":%s,"ENDTIME":%s,"SEQ":"%s","SHOT":"%s","SUBMIT":1}\n''' % (ns,st_time,ed_time,sq,st)
             obj = get_topgrp(ns,sq,st)
             cmds.select(obj)
             cmds.file(output, force=True, options = 'V=0', type= 'mayaAscii', pr=True, es=True)
-            if i != rn_list[-1]:
-                dic += ",\n"
+            # if i != rn_list[-1]:
+            #     dic += ",\n"
 
-    dic +="}"
+    # dic +="}"
 
     jsonFile = os.path.join(separate,("%s__%s__info.json") % (sq,st)).replace("\\","/")
     with open(jsonFile, 'w') as f:
-        f.write(dic)
+        # f.write(dic)
+        json.dump(dic, f)
 
 def get_topgrp(ns,_seq,_shot):
     topList = cmds.ls(assemblies=True)
