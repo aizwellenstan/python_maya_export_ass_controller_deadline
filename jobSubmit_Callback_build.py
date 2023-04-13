@@ -140,7 +140,7 @@ def main(PROJ_NAME,sq,st):
     jsonFile = os.path.join(separate,("%s__%s__info.json") % (sq,st)).replace("\\","/")
     with open(jsonFile, 'w') as f:
         # f.write(dic)
-        json.dump(dic, f)
+        json.dump(dic, f, indent=4)
 
 def get_topgrp(ns,_seq,_shot):
     topList = cmds.ls(assemblies=True)
